@@ -1,4 +1,11 @@
 function [nghiem, solanlap] = daycung(f, a, b, saiso)
+    % Hàm daycung: Tìm nghiệm của phương trình bằng phương pháp dây cung
+    % f: Hàm số cần tìm nghiệm 
+    % a, b: Giới hạn của khoảng phân ly nghiệm
+    % saiso: Sai số cho phép 
+    % nghiem: Nghiệm tìm được 
+    % solanlap: Số lần lặp để tìm được nghiệm
+    
     syms x;
     fd1 = str2func(['@(x)' char(diff(f(x)))]);
     fd2 = str2func(['@(x)' char(diff(fd1(x)))]);
@@ -41,25 +48,28 @@ function [nghiem, solanlap] = daycung(f, a, b, saiso)
 
     % nostop = 1 ==> hàm số thỏa điều kiện để sử dụng phương pháp dây cung
     if nostop
-        imax = 10000;
-        solanlap = 0;
-        c_old = 0;
+        imax = 10000;   % Số lần lặp tối đa
+        solanlap = 0;   % Khởi tạo số lần lặp
+        c_old = 0;      % Khởi tạo giá trị c_old;
         for i = 1:1:imax
+            % Tính giao điểm của dây cung và trục Ox
             c = (a* f(b) - b*f(a)) / (f(b) - f(a));
             solanlap = solanlap + 1;
-     
+            % Kiểm tra điều kiện để xác định khoảng [a, b] mới
             if f(a) * f(c) < 0
                 b = c;
             else
                 a = c;
             end
-
+            % Kiểm tra sai số để dừng lặp
             if abs(c - c_old) <= saiso
                 nghiem = c;
                 return;
             end
-            c_old = c;
+            % Cập nhật giá trị c_old để dùng cho vòng lặp tiếp theo
+            c_old = c; 
         end
+        % Nếu không tìm được nghiệm sau số lần lặp tối đa, trả về NaN
         nghiem = NaN;
         solanlap = NaN ;
     end
